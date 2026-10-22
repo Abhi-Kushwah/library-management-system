@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('My Books')}"></head>
+<body>
+<div th:replace="~{fragments :: nav}"></div>
+
+<div class="container">
+    <h2>My Books</h2>
+    <div th:replace="~{fragments :: messages}"></div>
+
+    <div class="panel">
+        <table th:if="${!issues.isEmpty()}">
+            <thead>
+            <tr><th>Book</th><th>Author</th><th>Issued</th><th>Due</th><th>Returned</th><th>Fine</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="i : ${issues}">
+                <td th:text="${i.book.title}"></td>
+                <td th:text="${i.book.author}"></td>
+                <td th:text="${#temporals.format(i.issueDate, 'dd MMM yyyy')}"></td>
+                <td>
+                    <span th:text="${#temporals.format(i.dueDate, 'dd MMM yyyy')}"></span>
+                    <span class="badge red" th:if="${i.overdue}">Overdue</span>
+                </td>
+                <td th:text="${i.returnDate != null} ? ${#temporals.format(i.returnDate, 'dd MMM yyyy')} : '-'"></td>
+                <td th:text="${i.liveFine > 0} ? 'Rs. ' + ${i.liveFine} : '-'"></td>
+            </tr>
+            </tbody>
+        </table>
+        <p class="muted" th:if="${issues.isEmpty()}">You have not borrowed any book yet.</p>
+    </div>
+</div>
+</body>
+</html>

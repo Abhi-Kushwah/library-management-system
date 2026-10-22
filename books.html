@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Books')}"></head>
+<body>
+<div th:replace="~{fragments :: nav}"></div>
+
+<div class="container">
+    <div class="panel-head">
+        <h2>Books</h2>
+        <a th:if="${session.loggedUser.role == 'ADMIN'}" th:href="@{/books/new}" class="btn">+ Add Book</a>
+    </div>
+
+    <div th:replace="~{fragments :: messages}"></div>
+
+    <form th:action="@{/books}" method="get" class="search-bar">
+        <input type="text" name="q" th:value="${q}" placeholder="Search by title, author, ISBN or category">
+        <button type="submit" class="btn">Search</button>
+        <a th:if="${q != null and !q.isBlank()}" th:href="@{/books}" class="btn secondary">Clear</a>
+    </form>
+
+    <div class="panel">
+        <table th:if="${!books.isEmpty()}">
+            <thead>
+            <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>ISBN</th>
+                <th>Category</th>
+                <th>Availability</th>
+                <th th:if="${session.loggedUser.role == 'ADMIN'}">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="b : ${books}">
+                <td th:text="${b.title}"></td>
+                <td th:text="${b.author}"></td>
+                <td th:text="${b.isbn}"></td>
+                <td th:text="${b.category}"></td>
+                <td>
+                    <span class="badge green" th:if="${b.availableCopies > 0}"
+                          th:text="${b.availableCopies} + ' of ' + ${b.totalCopies} + ' available'"></span>
+                    <span class="badge red" th:if="${b.availableCopies == 0}">All copies issued</span>
+                </td>
+                <td th:if="${session.loggedUser.role == 'ADMIN'}" class="actions">
+                    <a th:href="@{/books/{id}/edit(id=${b.id})}">Edit</a>
+                    <form th:action="@{/books/{id}/delete(id=${b.id})}" method="post"
+                          onsubmit="return confirm('Delete this book?')">
+                        <button type="submit" class="link-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <p class="muted" th:if="${books.isEmpty()}">No books found.</p>
+    </div>
+</div>
+</body>
+</html>

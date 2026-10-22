@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Members')}"></head>
+<body>
+<div th:replace="~{fragments :: nav}"></div>
+
+<div class="container">
+    <div class="panel-head">
+        <h2>Members</h2>
+        <a th:href="@{/members/new}" class="btn">+ Add Member</a>
+    </div>
+
+    <div th:replace="~{fragments :: messages}"></div>
+
+    <div class="panel">
+        <table th:if="${!members.isEmpty()}">
+            <thead>
+            <tr><th>#</th><th>Name</th><th>Email</th><th>Phone</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="m, stat : ${members}">
+                <td th:text="${stat.count}"></td>
+                <td th:text="${m.name}"></td>
+                <td th:text="${m.email}"></td>
+                <td th:text="${m.phone}"></td>
+            </tr>
+            </tbody>
+        </table>
+        <p class="muted" th:if="${members.isEmpty()}">No members yet.</p>
+    </div>
+</div>
+</body>
+</html>

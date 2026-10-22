@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Issue Book')}"></head>
+<body>
+<div th:replace="~{fragments :: nav}"></div>
+
+<div class="container narrow">
+    <h2>Issue a Book</h2>
+    <div th:replace="~{fragments :: messages}"></div>
+
+    <form th:action="@{/issues/issue}" method="post" class="form-card"
+          th:if="${!books.isEmpty() and !members.isEmpty()}">
+        <label>Book</label>
+        <select name="bookId" required>
+            <option value="">-- select a book --</option>
+            <option th:each="b : ${books}" th:value="${b.id}"
+                    th:text="${b.title} + ' (' + ${b.availableCopies} + ' available)'"></option>
+        </select>
+
+        <label>Member</label>
+        <select name="userId" required>
+            <option value="">-- select a member --</option>
+            <option th:each="m : ${members}" th:value="${m.id}"
+                    th:text="${m.name} + ' - ' + ${m.email}"></option>
+        </select>
+
+        <p class="muted" th:text="'Books are issued for ' + ${loanDays} + ' days. Late fine is Rs. 2 per day.'"></p>
+
+        <div class="form-actions">
+            <button type="submit" class="btn">Issue</button>
+            <a th:href="@{/issues}" class="btn secondary">Cancel</a>
+        </div>
+    </form>
+
+    <p class="muted" th:if="${books.isEmpty()}">No books are available to issue right now.</p>
+    <p class="muted" th:if="${members.isEmpty()}">Add a member first, then come back here.</p>
+</div>
+</body>
+</html>

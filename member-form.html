@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Add Member')}"></head>
+<body>
+<div th:replace="~{fragments :: nav}"></div>
+
+<div class="container narrow">
+    <h2>Add Member</h2>
+
+    <div class="alert error" th:if="${error}" th:text="${error}"></div>
+
+    <form th:action="@{/members/save}" method="post" class="form-card">
+        <label>Full name</label>
+        <input type="text" name="name" th:value="${name}" required>
+
+        <label>Email</label>
+        <input type="email" name="email" th:value="${email}" required>
+
+        <label>Phone</label>
+        <input type="text" name="phone" th:value="${phone}" maxlength="15">
+
+        <label>Password</label>
+        <input type="password" name="password" minlength="6" required>
+
+        <div class="form-actions">
+            <button type="submit" class="btn">Save</button>
+            <a th:href="@{/members}" class="btn secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>

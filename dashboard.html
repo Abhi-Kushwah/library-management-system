@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Dashboard')}"></head>
+<body>
+<div th:replace="~{fragments :: nav}"></div>
+
+<div class="container">
+    <h2>Welcome, <span th:text="${session.loggedUser.name}">User</span></h2>
+    <div th:replace="~{fragments :: messages}"></div>
+
+    <!-- admin view -->
+    <th:block th:if="${session.loggedUser.role == 'ADMIN'}">
+        <div class="cards">
+            <div class="card"><span class="num" th:text="${totalTitles}">0</span><span>Book titles</span></div>
+            <div class="card"><span class="num" th:text="${availableCopies}">0</span><span>Copies available</span></div>
+            <div class="card"><span class="num" th:text="${issuedNow}">0</span><span>Currently issued</span></div>
+            <div class="card warn"><span class="num" th:text="${overdueCount}">0</span><span>Overdue</span></div>
+            <div class="card"><span class="num" th:text="${totalMembers}">0</span><span>Members</span></div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-head">
+                <h3>Recent activity</h3>
+                <a th:href="@{/issues/new}" class="btn">Issue a book</a>
+            </div>
+            <table th:if="${!recentIssues.isEmpty()}">
+                <thead>
+                <tr><th>Book</th><th>Member</th><th>Issued on</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="i : ${recentIssues}">
+                    <td th:text="${i.book.title}"></td>
+                    <td th:text="${i.user.name}"></td>
+                    <td th:text="${#temporals.format(i.issueDate, 'dd MMM yyyy')}"></td>
+                    <td>
+                        <span class="badge gray" th:if="${i.status == 'RETURNED'}">Returned</span>
+                        <span class="badge red" th:if="${i.status == 'ISSUED' and i.overdue}">Overdue</span>
+                        <span class="badge blue" th:if="${i.status == 'ISSUED' and !i.overdue}">Issued</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <p class="muted" th:if="${recentIssues.isEmpty()}">No books have been issued yet.</p>
+        </div>
+    </th:block>
+
+    <!-- member view -->
+    <th:block th:if="${session.loggedUser.role != 'ADMIN'}">
+        <div class="cards">
+            <div class="card"><span class="num" th:text="${totalTitles}">0</span><span>Book titles in library</span></div>
+            <div class="card"><span class="num" th:text="${availableCopies}">0</span><span>Copies available now</span></div>
+            <div class="card"><span class="num" th:text="${myIssues.size()}">0</span><span>Books with you</span></div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-head">
+                <h3>Books you have right now</h3>
+                <a th:href="@{/books}" class="btn">Search books</a>
+            </div>
+            <table th:if="${!myIssues.isEmpty()}">
+                <thead>
+                <tr><th>Book</th><th>Issued on</th><th>Due date</th><th>Fine so far</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="i : ${myIssues}">
+                    <td th:text="${i.book.title}"></td>
+                    <td th:text="${#temporals.format(i.issueDate, 'dd MMM yyyy')}"></td>
+                    <td>
+                        <span th:text="${#temporals.format(i.dueDate, 'dd MMM yyyy')}"></span>
+                        <span class="badge red" th:if="${i.overdue}">Overdue</span>
+                    </td>
+                    <td th:text="'Rs. ' + ${i.liveFine}"></td>
+                </tr>
+                </tbody>
+            </table>
+            <p class="muted" th:if="${myIssues.isEmpty()}">You have no books issued at the moment.</p>
+        </div>
+    </th:block>
+</div>
+</body>
+</html>

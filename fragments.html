@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${title} + ' | Library Management System'">Library</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<nav class="navbar" th:fragment="nav">
+    <a class="brand" th:href="@{/dashboard}">Library LMS</a>
+    <div class="nav-links">
+        <a th:href="@{/dashboard}">Dashboard</a>
+        <a th:href="@{/books}">Books</a>
+        <th:block th:if="${session.loggedUser.role == 'ADMIN'}">
+            <a th:href="@{/members}">Members</a>
+            <a th:href="@{/issues/new}">Issue Book</a>
+            <a th:href="@{/issues}">Records</a>
+        </th:block>
+        <a th:if="${session.loggedUser.role != 'ADMIN'}" th:href="@{/my-books}">My Books</a>
+    </div>
+    <div class="nav-user">
+        <span th:text="${session.loggedUser.name}">User</span>
+        <a th:href="@{/logout}" class="logout">Logout</a>
+    </div>
+</nav>
+
+<div th:fragment="messages">
+    <div class="alert success" th:if="${msg}" th:text="${msg}"></div>
+    <div class="alert error" th:if="${error}" th:text="${error}"></div>
+</div>
+
+</body>
+</html>

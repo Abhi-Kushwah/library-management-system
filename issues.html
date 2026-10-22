@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Issue Records')}"></head>
+<body>
+<div th:replace="~{fragments :: nav}"></div>
+
+<div class="container">
+    <div class="panel-head">
+        <h2>Issue Records</h2>
+        <a th:href="@{/issues/new}" class="btn">Issue a book</a>
+    </div>
+
+    <div th:replace="~{fragments :: messages}"></div>
+
+    <div class="tabs">
+        <a th:href="@{/issues(filter='all')}" th:classappend="${filter == 'all'} ? 'active'">All</a>
+        <a th:href="@{/issues(filter='active')}" th:classappend="${filter == 'active'} ? 'active'">Currently issued</a>
+        <a th:href="@{/issues(filter='overdue')}" th:classappend="${filter == 'overdue'} ? 'active'">Overdue</a>
+    </div>
+
+    <div class="panel">
+        <table th:if="${!issues.isEmpty()}">
+            <thead>
+            <tr>
+                <th>Book</th><th>Member</th><th>Issued</th><th>Due</th>
+                <th>Returned</th><th>Fine</th><th>Status</th><th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="i : ${issues}">
+                <td th:text="${i.book.title}"></td>
+                <td th:text="${i.user.name}"></td>
+                <td th:text="${#temporals.format(i.issueDate, 'dd MMM yyyy')}"></td>
+                <td th:text="${#temporals.format(i.dueDate, 'dd MMM yyyy')}"></td>
+                <td th:text="${i.returnDate != null} ? ${#temporals.format(i.returnDate, 'dd MMM yyyy')} : '-'"></td>
+                <td th:text="${i.liveFine > 0} ? 'Rs. ' + ${i.liveFine} : '-'"></td>
+                <td>
+                    <span class="badge gray" th:if="${i.status == 'RETURNED'}">Returned</span>
+                    <span class="badge red" th:if="${i.status == 'ISSUED' and i.overdue}">Overdue</span>
+                    <span class="badge blue" th:if="${i.status == 'ISSUED' and !i.overdue}">Issued</span>
+                </td>
+                <td>
+                    <form th:if="${i.status == 'ISSUED'}" th:action="@{/issues/{id}/return(id=${i.id})}" method="post">
+                        <button type="submit" class="btn small">Mark returned</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <p class="muted" th:if="${issues.isEmpty()}">Nothing to show here.</p>
+    </div>
+</div>
+</body>
+</html>
